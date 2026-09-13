@@ -37,7 +37,6 @@ export default function SettingsModal({ onClose, onLoggedOut }) {
       const t = await complete({
         messages: [{ role: 'user', content: '只回复两个字：在线' }],
         max_tokens: 16,
-        effort: 'low',
       })
       setTest({ ok: true, msg: `连接成功 · 返回「${(t || '').trim().slice(0, 20)}」` })
     } catch (e) {
@@ -54,7 +53,7 @@ export default function SettingsModal({ onClose, onLoggedOut }) {
           <h2>⚙️ 模型设置</h2>
           <button className="modal-x" onClick={onClose}>✕</button>
         </div>
-        <p className="modal-sub">选择服务商与模型，填入你自己的 API Key。Key 仅保存在浏览器本地，请求经本站服务端代理转发。</p>
+        <p className="modal-sub">选择模型，填入你自己的 OpenRouter API Key。Key 仅保存在浏览器本地，请求由浏览器直连 OpenRouter。</p>
 
         <label className="cfg-label">服务商</label>
         <div className="provider-seg">
@@ -77,7 +76,7 @@ export default function SettingsModal({ onClose, onLoggedOut }) {
           className="cfg-input"
           type="password"
           value={cfg.apiKey}
-          placeholder={cfg.provider === 'deepseek' ? 'sk-...（platform.deepseek.com）' : 'sk-ant-...（console.anthropic.com）'}
+          placeholder="sk-or-...（在 openrouter.ai 获取）"
           onChange={(e) => set({ apiKey: e.target.value })}
         />
 
@@ -89,12 +88,9 @@ export default function SettingsModal({ onClose, onLoggedOut }) {
           onChange={(e) => set({ baseURL: e.target.value })}
         />
 
-        {cfg.provider === 'deepseek' && (
-          <div className="cfg-note">
-            DeepSeek 走 OpenAI 兼容协议。注意：<strong>答案引擎</strong>（联网检索）目前仅 Claude 支持，
-            DeepSeek 会自动降级为模型内置知识回答。
-          </div>
-        )}
+        <div className="cfg-note">
+          OpenRouter 聚合了 Claude、DeepSeek 等多种模型。<strong>答案引擎 / 竞品分析</strong>的联网检索在纯静态版不可用，会自动降级为模型内置知识。
+        </div>
 
         {test && <div className={`test-result ${test.ok ? 'ok' : 'bad'}`}>{test.ok ? '✓ ' : '✕ '}{test.msg}</div>}
 

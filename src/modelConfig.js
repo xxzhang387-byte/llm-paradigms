@@ -1,29 +1,24 @@
-// 模型配置：存在 localStorage，全站生效。支持 Claude 与 DeepSeek。
-const KEY = 'llm_model_config_v1'
+// 模型配置：存在 localStorage，全站生效。
+// 纯静态部署：所有请求由浏览器直连 OpenRouter（支持 CORS），
+// 用户填入自己的 OpenRouter API Key，Key 永不离开浏览器。
+const KEY = 'llm_model_config_v2'
 
 export const PROVIDERS = {
-  anthropic: {
-    label: 'Claude (Anthropic)',
-    baseURLPlaceholder: '默认 https://api.anthropic.com',
-    keyHint: '留空则用服务端 ANTHROPIC_API_KEY',
+  openrouter: {
+    label: 'OpenRouter（多模型聚合）',
+    baseURLPlaceholder: '默认 https://openrouter.ai/api/v1',
+    keyHint: '在 openrouter.ai 获取 API Key',
     models: [
-      { id: 'claude-opus-4-8', name: 'Opus 4.8 · 最强' },
-      { id: 'claude-sonnet-4-6', name: 'Sonnet 4.6 · 均衡' },
-      { id: 'claude-haiku-4-5', name: 'Haiku 4.5 · 最快' },
-    ],
-  },
-  deepseek: {
-    label: 'DeepSeek',
-    baseURLPlaceholder: '默认 https://api.deepseek.com',
-    keyHint: '在 platform.deepseek.com 获取，留空则用服务端 DEEPSEEK_API_KEY',
-    models: [
-      { id: 'deepseek-chat', name: 'DeepSeek-V3 · chat' },
-      { id: 'deepseek-reasoner', name: 'DeepSeek-R1 · reasoner' },
+      { id: 'anthropic/claude-sonnet-4-6', name: 'Claude Sonnet 4.6 · 均衡' },
+      { id: 'anthropic/claude-opus-4-8', name: 'Claude Opus 4.8 · 最强' },
+      { id: 'anthropic/claude-haiku-4-5', name: 'Claude Haiku 4.5 · 最快' },
+      { id: 'deepseek/deepseek-chat', name: 'DeepSeek-V3 · chat' },
+      { id: 'deepseek/deepseek-r1', name: 'DeepSeek-R1 · reasoner' },
     ],
   },
 }
 
-const DEFAULT = { provider: 'anthropic', model: 'claude-opus-4-8', apiKey: '', baseURL: '' }
+const DEFAULT = { provider: 'openrouter', model: 'anthropic/claude-sonnet-4-6', apiKey: '', baseURL: '' }
 
 export function getConfig() {
   try {
@@ -41,23 +36,17 @@ export function clearConfig() {
   localStorage.removeItem(KEY)
 }
 
-// Gate: the app is only usable after the user picked a model and entered
-// their own API key on the login page.
+// Gate: the app is only usable after the user entered their own API key.
 export function isConfigured() {
   return !!getConfig().apiKey
 }
 
 // Merge the active config into an outgoing request body.
-// An explicit body.provider/model (e.g. the router) wins; the key/baseURL are only
-// attached when the call's provider matches the configured provider.
+// Everything routes through OpenRouter, so apiKey/baseURL always apply.
 export function withConfig(body = {}) {
   const c = getConfig()
-  const provider = body.provider || c.provider
-  const model = body.model || c.model
-  const out = { ...body, provider, model }
-  if (provider === c.provider) {
-    if (c.apiKey) out.apiKey = c.apiKey
-    if (c.baseURL) out.baseURL = c.baseURL
-  }
+  const out = { ...body, model: body.model || c.model }
+  if (c.apiKey) out.apiKey = c.apiKey
+  if (c.baseURL) out.baseURL = c.baseURL
   return out
 }

@@ -3,19 +3,18 @@ import { DemoShell, Rich, Spinner } from '../components.jsx'
 import { streamChat } from '../api.js'
 
 const MODELS = [
-  { id: 'claude-opus-4-8', provider: 'anthropic', name: 'Opus 4.8 · 最强' },
-  { id: 'claude-sonnet-4-6', provider: 'anthropic', name: 'Sonnet 4.6 · 均衡' },
-  { id: 'claude-haiku-4-5', provider: 'anthropic', name: 'Haiku 4.5 · 最快' },
-  { id: 'deepseek-chat', provider: 'deepseek', name: 'DeepSeek-V3 · chat' },
-  { id: 'deepseek-reasoner', provider: 'deepseek', name: 'DeepSeek-R1 · reasoner' },
+  { id: 'anthropic/claude-opus-4-8', name: 'Opus 4.8 · 最强' },
+  { id: 'anthropic/claude-sonnet-4-6', name: 'Sonnet 4.6 · 均衡' },
+  { id: 'anthropic/claude-haiku-4-5', name: 'Haiku 4.5 · 最快' },
+  { id: 'deepseek/deepseek-chat', name: 'DeepSeek-V3 · chat' },
+  { id: 'deepseek/deepseek-r1', name: 'DeepSeek-R1 · reasoner' },
 ]
-const provOf = (id) => MODELS.find((m) => m.id === id)?.provider
 
 const SAMPLES = ['用一个比喻解释什么是「机会成本」', '写一句话的科幻小说', '反驳「努力一定有回报」']
 
 export default function RouterDemo() {
-  const [left, setLeft] = useState('claude-opus-4-8')
-  const [right, setRight] = useState('claude-haiku-4-5')
+  const [left, setLeft] = useState('anthropic/claude-opus-4-8')
+  const [right, setRight] = useState('anthropic/claude-haiku-4-5')
   const [prompt, setPrompt] = useState('')
   const [outL, setOutL] = useState('')
   const [outR, setOutR] = useState('')
@@ -33,7 +32,6 @@ export default function RouterDemo() {
         system: '简洁地用中文回答。',
         messages: [{ role: 'user', content: text }],
         model,
-        provider: provOf(model),
         onText: (full) => set(full),
       }).catch((e) => set(`⚠️ ${e.message || e}`))
     await Promise.all([one(left, setOutL), one(right, setOutR)])

@@ -28,7 +28,6 @@ export default function Onboarding({ onDone }) {
       const t = await complete({
         messages: [{ role: 'user', content: '只回复两个字：在线' }],
         max_tokens: 16,
-        effort: 'low',
       })
       setTest({ ok: true, msg: `连接成功 · 返回「${(t || '').trim().slice(0, 20)}」` })
     } catch (e) {
@@ -61,7 +60,7 @@ export default function Onboarding({ onDone }) {
 
         <h1 className="login-title">欢迎，先连上你的模型</h1>
         <p className="login-sub">
-          所有 demo 都会真实调用大模型。请选择服务商与模型，并填入你自己的 API Key。
+          所有 demo 都会真实调用大模型。请选择模型，并填入你自己的 OpenRouter API Key。
         </p>
 
         <div className="login-steps">
@@ -70,7 +69,7 @@ export default function Onboarding({ onDone }) {
           ))}
         </div>
 
-        <label className="cfg-label">① 选择服务商</label>
+        <label className="cfg-label">① 服务商</label>
         <div className="provider-seg login-provider-seg">
           {Object.entries(PROVIDERS).map(([id, p]) => (
             <button key={id} className={cfg.provider === id ? 'on' : ''} onClick={() => onProvider(id)}>
@@ -94,13 +93,13 @@ export default function Onboarding({ onDone }) {
           ))}
         </div>
 
-        <label className="cfg-label">③ 填写 API Key</label>
+        <label className="cfg-label">③ 填写 OpenRouter API Key</label>
         <div className="login-keyrow">
           <input
             className="cfg-input"
             type={showKey ? 'text' : 'password'}
             value={cfg.apiKey}
-            placeholder={cfg.provider === 'deepseek' ? 'sk-...（platform.deepseek.com）' : 'sk-ant-...（console.anthropic.com）'}
+            placeholder="sk-or-...（在 openrouter.ai 获取）"
             onChange={(e) => { set({ apiKey: e.target.value }); setTest(null) }}
             onKeyDown={(e) => e.key === 'Enter' && enter()}
             autoFocus
@@ -118,11 +117,10 @@ export default function Onboarding({ onDone }) {
           onChange={(e) => set({ baseURL: e.target.value })}
         />
 
-        {cfg.provider === 'deepseek' && (
-          <div className="cfg-note">
-            DeepSeek 走 OpenAI 兼容协议；<strong>答案引擎</strong>的联网检索仅 Claude 支持，会自动降级为模型内置知识。
-          </div>
-        )}
+        <div className="cfg-note">
+          OpenRouter 聚合了 Claude、DeepSeek 等多种模型，支持浏览器直连（CORS）。
+          <strong>答案引擎 / 竞品分析</strong>的联网检索在纯静态版不可用，会自动降级为模型内置知识。
+        </div>
 
         {test && <div className={`test-result ${test.ok ? 'ok' : 'bad'}`}>{test.ok ? '✓ ' : '✕ '}{test.msg}</div>}
 
@@ -136,7 +134,7 @@ export default function Onboarding({ onDone }) {
         </div>
 
         <p className="login-foot">
-          🔒 Key 仅保存在你浏览器的 localStorage，请求经本站服务端代理转发，不会被站点存储；你也可以随时在右下角 ⚙️ 中更换或退出。
+          🔒 Key 仅保存在你浏览器的 localStorage，请求由浏览器<strong>直连 OpenRouter</strong>，不经过任何我方服务器；你可以随时在右下角 ⚙️ 中更换或退出。
         </p>
       </div>
     </div>
