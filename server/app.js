@@ -27,6 +27,10 @@ function parseModelJson(text) {
 const app = express()
 app.use(express.json({ limit: '2mb' }))
 
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, service: 'llm-paradigms-api', ts: Date.now() })
+})
+
 // --- Streaming chat: writes raw text deltas to the response body ---
 app.post('/api/chat', async (req, res) => {
   res.setHeader('Content-Type', 'text/plain; charset=utf-8')
