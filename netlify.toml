@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "nft"
+  node_version = "20"
+
+[functions.api]
+  timeout = 26
+
+# SPA fallback (React Router) — /api/* is claimed by the function above.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
